@@ -1,0 +1,15 @@
+GENERATED_RSP=examples/11g-legacy-rhel6/dbca.rsp
+--- key settings (passwords shown as placeholders only) ---
+responseFileVersion=/oracle/assistants/rspfmt_dbca_response_schema_v11.2.0
+gdbName=orcl11g
+sid=orcl11g
+sysPassword=***
+systemPassword=***
+characterSet=AL32UTF8
+nationalCharacterSet=AL16UTF16
+sgaTarget=800
+pgaAggregateTarget=400
+processes=150
+automaticMemoryManagement=FALSE
+--- fill passwords with: bash fill_dbca_passwords.sh %s ---
+examples/11g-legacy-rhel6/dbca.rsp

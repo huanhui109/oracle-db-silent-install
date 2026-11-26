@@ -1,0 +1,9 @@
+BACKUP=listener.ora.bak.20261126141726
+WROTE=listener.ora
+BACKUP=tnsnames.ora.bak.20261126141726
+WROTE=tnsnames.ora
+--- effective binding ---
+bind=127.0.0.1 port=1521 sid=ORCL service=ORCL
+--- verify after lsnrctl reload ---
+ss -lntp | grep 1521   # expect 127.0.0.1:1521 only
+tnsping ORCL

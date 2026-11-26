@@ -1,0 +1,14 @@
+GENERATED_RSP=dbca.rsp
+--- key settings (passwords shown as placeholders only) ---
+responseFileVersion=/oracle/assistants/rspfmt_dbca_response_schema_v19.0.0
+gdbName=orcl
+sid=orcl
+sysPassword=***
+systemPassword=***
+createAsContainerDatabase=false
+characterSet=ZHS16GBK
+nationalCharacterSet=AL16UTF16
+initParams=sga_target=512M,pga_aggregate_target=256M,processes=100
+automaticMemoryManagement=FALSE
+--- fill passwords with: bash fill_dbca_passwords.sh %s ---
+dbca.rsp

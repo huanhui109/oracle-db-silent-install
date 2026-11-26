@@ -1,0 +1,98 @@
+Oracle Database 19c silent install - review sheet
+========================================================
+Generated: 2026-11-26 14:17:27 CST
+Target SSH alias: orcl19c
+
+Parameters under review
+-----------------------
+ORACLE_BASE  = /u01/app/oracle
+ORACLE_HOME  = /u01/app/oracle/product/19.0.0/dbhome_1
+ORACLE_SID   = orcl
+GDBNAME      = orcl
+CHARSET      = ZHS16GBK
+CDB_MODE     = false
+MEMORY       = SGA 512M / PGA 256M / processes 100
+LISTENER     = 127.0.0.1:1521
+
+Stage 0 - Preflight (read-only)                               [AGENT]
+---------------------------------------------------------------
+ssh orcl19c 'bash -s -- 19c' < scripts/precheck.sh
+Resolve every BLOCKER: line before continuing.
+  - 19c/12c require the GLIBC_2.14 symbol; glibc 2.12 cannot run these binaries.
+  - Note which RPMs are MISSING and whether the platform is outside Oracle support.
+
+CHECKPOINT 0: report delivered, no blockers, plan not yet approved.
+
+Stage 1 - Written plan and approval                           [AGENT]
+---------------------------------------------------------------
+Present: directory tree, space budget, exact parameters, root-vs-oracle split,
+and explicit risk acceptance. Wait for an explicit "go".
+
+CHECKPOINT 1: user approved the plan.
+
+Stage 2 - System preparation (root)                           [ROOT]
+---------------------------------------------------------------
+bash scripts/gen_root_prep.sh 19c > /tmp/root_prep.sh
+# review /tmp/root_prep.sh, then on the target as root:
+#   bash /tmp/root_prep.sh
+Verify: id oracle; hostname -f; /sbin/sysctl -p (already applied);
+        ulimit -a as oracle.
+
+CHECKPOINT 2: groups, directories, sysctl, limits and packages confirmed.
+
+Stage 3 - Software install (oracle user)                      [ORACLE]
+---------------------------------------------------------------
+# 3.1 environment
+bash scripts/gen_env_file.sh - 19c | tee -a /home/oracle/.bash_profile
+source /home/oracle/.bash_profile
+
+# 3.2 media - IMAGE-BASED zip goes straight into the empty ORACLE_HOME
+unzip -q /u01/LINUX.X64_193000_db_home.zip -d "/u01/app/oracle/product/19.0.0/dbhome_1"
+
+# 3.3 response file and installer
+bash scripts/gen_db_install_rsp.sh "/u01/app/oracle/product/19.0.0/dbhome_1" /home/oracle/db_install.rsp 19c
+cd "/u01/app/oracle/product/19.0.0/dbhome_1"
+./runInstaller -silent -responseFile /home/oracle/db_install.rsp \
+  -ignorePrereqFailure -waitforcompletion
+
+CHECKPOINT 3: "Successfully Setup Software" and two root script paths captured.
+
+Stage 4 - Root scripts                                        [ROOT]
+---------------------------------------------------------------
+/u01/app/oraInventory/orainstRoot.sh
+/u01/app/oracle/product/19.0.0/dbhome_1/root.sh
+Verify: /etc/oratab entry exists, root.sh log clean, sqlplus -V works as oracle.
+
+CHECKPOINT 4: both root scripts succeeded.
+
+Stage 5 - Listener and database (oracle user)                 [ORACLE]
+---------------------------------------------------------------
+# 5.1 listener (19c template lives under assistants/, not install/response/)
+netca -silent -responsefile "/u01/app/oracle/product/19.0.0/dbhome_1/assistants/netca/netca.rsp"
+
+# 5.2 bind loopback for local-only testing
+TNS_OUT="/u01/app/oracle/product/19.0.0/dbhome_1/network/admin/tnsnames.ora" \
+  bash scripts/gen_listener_ora.sh "/u01/app/oracle/product/19.0.0/dbhome_1/network/admin/listener.ora"
+lsnrctl reload && ss -lntp | grep 1521
+
+# 5.3 database - passwords are typed by the human, never by an agent
+bash scripts/gen_dbca_rsp.sh /home/oracle/dbca.rsp 19c
+bash scripts/fill_dbca_passwords.sh /home/oracle/dbca.rsp
+dbca -silent -createDatabase -responseFile /home/oracle/dbca.rsp -ignorePreReqs
+
+CHECKPOINT 5: dbca reached 100%, instance registered in /etc/oratab.
+
+Stage 6 - Verification and cleanup                            [AGENT]
+---------------------------------------------------------------
+ssh orcl19c 'bash -s -- orcl 19c' < scripts/verify.sh
+Require: instance OPEN, CDB flag as planned, charset as planned, memory values
+as planned, listener bound to 127.0.0.1:1521, tnsping OK.
+Only then delete the install zip as a single file:  rm -f /u01/*_db_home.zip
+
+CHECKPOINT 6: verification green, cleanup done, free space reported.
+
+Red lines
+---------
+- Never rm -rf an oradata directory.
+- Never put a real password in a response file, a command line, or a chat message.
+- Never display, copy or transmit SSH key material.

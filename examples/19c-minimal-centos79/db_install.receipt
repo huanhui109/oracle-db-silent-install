@@ -1,0 +1,14 @@
+GENERATED_RSP=/home/oracle/db_install.rsp
+--- key settings (no secrets present) ---
+DECLINE_SECURITY_UPDATES=true
+INVENTORY_LOCATION=/u01/app/oraInventory
+ORACLE_BASE=/u01/app/oracle
+ORACLE_HOME=/u01/app/oracle/product/19.0.0/dbhome_1
+ORACLE_HOSTNAME=orcl19c.example.com
+UNIX_GROUP_NAME=oinstall
+oracle.install.db.InstallEdition=EE
+oracle.install.db.OSDBA_GROUP=dba
+oracle.install.db.OSOPER_GROUP=oper
+oracle.install.db.rootconfig.executeRootScript=false
+oracle.install.option=INSTALL_DB_SWONLY
+oracle.installer.autoupdates.option=SKIP_UPDATES

@@ -1,0 +1,15 @@
+# >>> oracle-db-silent-install: environment (19c) >>>
+# Managed block. Re-running the generator replaces this block; keep manual
+# edits outside the markers.
+umask 022
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0/dbhome_1
+export ORACLE_SID=orcl
+export PATH=${ORACLE_HOME}/bin:${PATH}
+export LD_LIBRARY_PATH=${ORACLE_HOME}/lib:${LD_LIBRARY_PATH:-}
+export NLS_LANG=AMERICAN_AMERICA.AL32UTF8
+export TMPDIR=/tmp
+# NLS_LANG must match the database character set. ZHS16GBK databases normally
+# use AMERICAN_AMERICA.ZHS16GBK, not AL32UTF8.
+# export TNS_ADMIN=/u01/app/oracle/product/19.0.0/dbhome_1/network/admin
+# <<< oracle-db-silent-install: environment <<<
