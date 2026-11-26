@@ -20,7 +20,7 @@ jobs:
         # bugs live (printf option parsing, no ${var,,}, no associative arrays).
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Show bash version
         run: bash --version | head -1
