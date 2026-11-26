@@ -1,0 +1,77 @@
+name: Bug report
+description: Something in the workflow, a script, or a reference is wrong.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you paste anything: **remove hostnames, IPs, usernames, passwords,
+        and key material.** A response file with a real password in it must never
+        appear in an issue. If a credential leaked, follow SECURITY.md instead.
+
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened
+      description: The actual output, error line, or behaviour. Trim to the relevant lines.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: Which stage of SKILL.md this belongs to, and what the docs promise there.
+    validations:
+      required: true
+
+  - type: input
+    id: script
+    attributes:
+      label: Script and invocation
+      placeholder: "bash scripts/gen_dbca_rsp.sh /home/oracle/dbca.rsp 19c"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: Oracle version
+      options:
+        - 19c
+        - 18c
+        - 12cR2
+        - 12cR1
+        - 11gR2
+        - not applicable (docs / tooling)
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS of the target host
+      placeholder: "CentOS 7.9 (glibc 2.17) / RHEL 8.6"
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Where the script ran
+      description: Target host as the oracle user, via SSH stream, or on the control machine?
+      placeholder: "ssh alias, streamed with bash -s"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmations
+      options:
+        - label: I removed all secrets, hostnames and key material from this report.
+          required: true
+        - label: I ran `make test` (or `bash tests/run_tests.sh`) and it passes locally.
+          required: false

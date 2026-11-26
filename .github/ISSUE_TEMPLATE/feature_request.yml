@@ -1,0 +1,52 @@
+name: Feature request
+description: A new version profile, a missing guard, or a clearer stage.
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This project optimises for **predictability over automation**. Proposals
+        that remove a checkpoint, run a privileged step automatically, or accept a
+        password from an agent will be declined — say what failure you are
+        preventing instead, and it will get a fair hearing.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The failure this prevents
+      description: Describe the real deployment where this bites today.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - New Oracle version / platform profile
+        - New or improved script
+        - Reference documentation (version matrix / planning / pitfalls)
+        - Skill flow (stages, gates, wording)
+        - Tooling, tests, CI
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed shape
+      description: Which script, which stage, which keys. A sketch beats an essay.
+      render: text
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety impact
+      options:
+        - label: This does not add privileged commands that run without human confirmation.
+          required: true
+        - label: This does not require a secret to pass through an agent, a command line, or a log.
+          required: true
