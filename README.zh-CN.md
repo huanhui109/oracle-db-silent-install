@@ -145,7 +145,7 @@ make test          # 等价于 bash tests/run_tests.sh
 make lint          # 全量 bash -n，装了 shellcheck 就跑
 ```
 
-28 组用例（82 条断言），可在 macOS 和 Linux 上离线运行：不需要 Oracle、不联网、
+28 组用例（83 条断言），可在 macOS 和 Linux 上离线运行：不需要 Oracle、不联网、
 不用 root。断言的都是要紧的契约——键位随版本正确、安装选项不重复、响应文件权限为
 `600`、密码填写脚本无 TTY 时以退出码 3 拒绝执行、任何生成产物都不可能出现明文密码。
 

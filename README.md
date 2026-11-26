@@ -153,7 +153,7 @@ make test          # or: bash tests/run_tests.sh
 make lint          # bash -n everywhere, shellcheck when available
 ```
 
-28 test groups (82 assertions) run offline on macOS and Linux: no Oracle, no
+28 test groups (83 assertions) run offline on macOS and Linux: no Oracle, no
 network, no root. They assert the contracts that matter — version-correct keys,
 de-duplicated installer options, `600` on response files, exit 3 when the
 password filler has no TTY, and that no generated artifact can contain a literal
