@@ -1,0 +1,11 @@
+# shellcheck configuration
+#
+# The scripts target bash 3.2+ because macOS ships that, and they are frequently
+# streamed over SSH with `bash -s`, so they must stay standalone.
+shell=bash
+severity=warning
+external-sources=true
+
+# SC1090/SC1091: we never source anything; the disable lines are for readers.
+# SC2015: `a && b || c` is used deliberately in a few printed blocks.
+disable=SC2015

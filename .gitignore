@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# build output
+dist/
+*.zip
+
+# generated objects that should never be committed
+*.rsp.tmp
+root_prep.local.sh
+
+# backup files produced when regenerating listener.ora
+*.bak.*
+
+# editor / tooling
+.idea/
+.vscode/
+*.swp
