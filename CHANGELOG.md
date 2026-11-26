@@ -59,8 +59,13 @@ listener).
 
 - `verify.sh` no longer aborts with an unbound-variable error when `ORACLE_HOME`
   is not exported.
-- `gen_db_install_rsp.sh` escapes the `|` delimiter used by its own `sed`
-  expressions, so a value containing `|` can no longer corrupt the output.
+- `gen_db_install_rsp.sh` and `fill_dbca_passwords.sh` no longer use `sed -i`.
+  BSD sed consumes the argument after `-i` as a backup suffix, so `sed -i -E ...`
+  silently edits nothing on macOS while appearing to work on GNU sed — caught by
+  the macOS CI job, not locally. Both now rewrite the file through `awk`, which
+  also removes the need to escape `/`, `|` and `&` in values, so a password or
+  hostname containing those characters is written verbatim. `tests/run_tests.sh`
+  gains `t04` to keep in-place `sed` from coming back.
 - `precheck.sh` no longer scans the entire filesystem for `runInstaller`; it
   probes `/u01`, `/u02`, `/opt` and `/home/oracle` only.
 - Portable `printf` usage: heading lines are emitted as

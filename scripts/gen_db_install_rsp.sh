@@ -44,18 +44,21 @@ if [ ! -f "$TPL" ]; then
 fi
 cp "$TPL" "$OUT"
 
-# Escape replacement strings that may contain & or / or backslash or the |
-# delimiter used by set_val's sed expression.
-esc() { printf '%s' "$1" | sed -e 's/[\/&|]/\\&/g'; }
-
+# set_val <key> <value>: rewrite an existing key (commented or not) in place, or
+# append it when absent.
+#
+# awk instead of `sed -i` on purpose: BSD sed consumes the argument after -i as a
+# backup suffix, so `sed -i -E ...` silently edits nothing on macOS. Matching
+# with index() also means no regex escaping of keys or values is needed.
 set_val() {
-  # set_val <key> <value> : replace an existing (commented or not) key, else append.
-  key="$1"; val="$(esc "$2")"
-  if grep -qE "^#?${key}=" "$OUT"; then
-    sed -i -E "s|^#?${key}=.*|${key}=${val}|" "$OUT"
-  else
-    printf '%s=%s\n' "$key" "$2" >> "$OUT"
-  fi
+  key="$1"; val="$2"; tmp="$OUT.tmp.$$"
+  awk -v k="$key" -v v="$val" '
+    index($0, k "=") == 1     { print k "=" v; found = 1; next }
+    index($0, "#" k "=") == 1 { print k "=" v; found = 1; next }
+    { print }
+    END { if (!found) print k "=" v }
+  ' "$OUT" > "$tmp"
+  mv "$tmp" "$OUT"
 }
 
 # Keys common across 11g/12c/19c for software-only install.

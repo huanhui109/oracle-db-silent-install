@@ -93,6 +93,20 @@ t03_executable_bits() {
   [ "$failed" -eq 0 ] && ok "all scripts carry +x"
 }
 
+t04_no_sed_inplace() {
+  echo "[T04] no script relies on 'sed -i'"
+  # BSD sed eats the argument after -i as a backup suffix, so `sed -i -E ...`
+  # silently edits nothing on macOS while working on GNU sed. This caught a real
+  # regression in CI; the guard keeps it from coming back.
+  local hits
+  hits=$(grep -rnE '(^|[^`[:alnum:]_])sed -i' "$SCRIPTS" 2>/dev/null | grep -vE ':[0-9]+:[[:space:]]*#')
+  if [ -n "$hits" ]; then
+    bad "in-place sed found; use an awk rewrite" "$hits"
+  else
+    ok "no in-place sed anywhere"
+  fi
+}
+
 # ---------------------------------------------------------------------------
 # gen_dbca_rsp.sh
 # ---------------------------------------------------------------------------
@@ -379,7 +393,7 @@ t92_docs_present() {
 # ---------------------------------------------------------------------------
 # runner
 # ---------------------------------------------------------------------------
-TESTS="t01_syntax t02_shellcheck t03_executable_bits
+TESTS="t01_syntax t02_shellcheck t03_executable_bits t04_no_sed_inplace
 t10_dbca_19c_noncdb t11_dbca_19c_cdb t12_dbca_11g t13_dbca_18c t14_dbca_bad_version
 t20_install_rsp t21_install_rsp_missing_template
 t30_fill_requires_tty t31_fill_missing_file

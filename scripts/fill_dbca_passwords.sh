@@ -33,20 +33,22 @@ else
   P3=''
 fi
 
-# Escape sed replacement metacharacters (&, /, \), plus | used as delimiter.
-esc() { printf '%s' "$1" | sed -e 's/[\/&|]/\\&/g'; }
-E1="$(esc "$P1")"; E2="$(esc "$P2")"; E3="$(esc "$P3")"
-
-sed -i \
-  -e "s|^sysPassword=.*|sysPassword=${E1}|" \
-  -e "s|^systemPassword=.*|systemPassword=${E2}|" \
-  "$RSP"
-if [ -n "$P3" ]; then
-  sed -i -e "s|^pdbAdminPassword=.*|pdbAdminPassword=${E3}|" "$RSP"
-fi
-
-unset P1 P2 P3 E1 E2 E3
+# Substitute into a temp file, then swap it in.
+#
+# Not `sed -i`: BSD sed consumes the argument after -i as a backup suffix, so the
+# GNU form silently edits nothing on macOS. awk also means the password needs no
+# sed-metacharacter escaping (`/`, `|`, `&` all just work).
+umask 077
+tmp="$RSP.tmp.$$"
+awk -v s="$P1" -v y="$P2" -v p="$P3" '
+  index($0, "sysPassword=") == 1     { print "sysPassword=" s; next }
+  index($0, "systemPassword=") == 1  { print "systemPassword=" y; next }
+  index($0, "pdbAdminPassword=") == 1 && p != "" { print "pdbAdminPassword=" p; next }
+  { print }
+' "$RSP" > "$tmp"
+mv "$tmp" "$RSP"
 chmod 600 "$RSP"
+unset P1 P2 P3
 
 remaining=$(grep -c 'CHANGE_ME' "$RSP" || true)
 printf 'Remaining placeholders: %s (expected 0)\n' "$remaining"
