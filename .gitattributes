@@ -1,0 +1,17 @@
+# Keep line endings boring: every text file is LF in the repository and in the
+# working tree. A CRLF SKILL.md breaks the frontmatter check, and a CRLF shell
+# script breaks bash with "$'\r': command not found" on Linux.
+* text=auto eol=lf
+
+*.sh   text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+Makefile text eol=lf
+*.rsp  text eol=lf
+VERSION text eol=lf
+.editorconfig text eol=lf
+
+*.zip binary
+*.png binary
+*.jpg binary
